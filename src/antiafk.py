@@ -26,11 +26,11 @@ def execute_human_movement():
 
     # check if the interval has been reached otherwise progress the progress bar
     if (rand_interval - timer == 0):  
+        sys.stdout.write("[{:{}}] Done\033[K\n".format("="*timer, rand_interval))
+        
         # create a new random interval and determine the random movement to be executed now
         rand_key = random.randint(1,4)
         rand_interval = random.randint(10,90)
-
-        sys.stdout.write("[{:{}}] Done\033[K\n")
 
         pyautogui.mouseDown(button='right')
         pyautogui.keyDown(KEYS[rand_key])
