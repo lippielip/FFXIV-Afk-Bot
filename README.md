@@ -1,7 +1,7 @@
-<h3 align="center">Anti AFK Bot</h3>
+<h3 align="center">FFXIV AFK Bot</h3>
 
   <p align="center">
-    Never get booted from a game for inactivity ever again!
+   Tired of getting kicked from games due to inactivity? This Bot will make random movements in random intervals to prevent you from getting flagged as afk. 
   </p>
   
 ### Built With
@@ -12,7 +12,7 @@
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/lippielip/Anti-AFK-Bot.git
+   git clone https://github.com/lippielip/ffxiv-afk-bot.git
    ```
 2. Install Pip packages
    ```sh
