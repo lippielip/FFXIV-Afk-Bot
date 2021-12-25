@@ -23,8 +23,8 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: src/dist/windows/antiafk.exe
-        asset_name: Anti-AFK.exe
+        file: "src/dist/windows/FFXIV Afk Bot.exe"
+        asset_name: "FFXIV Afk Bot.exe"
         tag: V.${{ github.run_number }}.0
         overwrite: true
-        body: "Automated Master Release"
+        body: ${{ github.event.commits[0].message }}
