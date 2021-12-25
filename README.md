@@ -21,7 +21,7 @@
    ```
 3. Start the program
    ```sh
-   python antiafk-py
+   python antiafk.py
    ```
 
 
