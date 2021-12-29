@@ -3,20 +3,51 @@ import random
 import time
 import sys
 from os import system, name
+import os
+import ctypes
 import threading
+import pygetwindow as window
 from pynput.keyboard import Key, KeyCode, Listener
 
-global activated, timer, rand_interval
+global activated, timer, rand_interval, originalWindow
 
 activated = False
 rand_interval = 0
 timer = 0
-
 KEYS = {1:'a',
         2: 'd',
         3: 'w',
-        4: 's'}      
+        4: 's'}
 
+
+def is_admin():
+    try:
+        return os.getuid() == 0
+    except AttributeError:
+        pass
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin() == 1
+    except AttributeError:
+        # the heck are you on?
+        return False
+
+
+def get_game_window():
+    global originalWindow
+    originalWindow = window.getActiveWindow()
+    try:
+        gameWindow = window.getWindowsWithTitle('FINAL FANTASY XIV')[0]
+        if is_admin():
+            gameWindow.activate()
+    except IndexError:
+        return
+
+
+def return_to_original_window():
+    global originalWindow
+    if is_admin():
+        originalWindow.activate()
+    
 
 def execute_human_movement():
     global timer, rand_interval
@@ -27,16 +58,20 @@ def execute_human_movement():
     # check if the interval has been reached otherwise progress the progress bar
     if (rand_interval - timer == 0):  
         sys.stdout.write("[{:{}}] Done\033[K\n".format("="*timer, rand_interval))
-        
+
+        #set the focus to the game
+        get_game_window()
+
         # create a new random interval and determine the random movement to be executed now
         rand_key = random.randint(1,4)
         rand_interval = random.randint(10,90)
 
-        pyautogui.mouseDown(button='right')
         pyautogui.keyDown(KEYS[rand_key])
         pyautogui.sleep(0.1)
         pyautogui.keyUp(KEYS[rand_key])
-        pyautogui.mouseUp(button='right')
+
+        # return focus to whatever you were doing before
+        return_to_original_window()
 
         # reset the interval timer
         timer = 0
@@ -67,7 +102,11 @@ def toggle_activated():
     if activated:
         activation_text = "\033[92mactive\033[0m"
     # print the current state
+    if not is_admin():
+        print("\u001b[31mNot running as admin. Automatic window focus will not work.\033[0m")
+
     print("Anti-AFK Bot is: {}".format(activation_text))
+
     print('')
 
 
