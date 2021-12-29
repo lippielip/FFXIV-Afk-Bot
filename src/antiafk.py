@@ -19,6 +19,16 @@ KEYS = {1:'a',
         3: 'w',
         4: 's'}
 
+# define our clear function
+def clear():
+  
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+  
+    # for mac and linux
+    else:
+        _ = system('clear')
 
 def is_admin():
     try:
@@ -154,29 +164,23 @@ def is_combination_pressed(combination):
 
 def on_press(key):
     """ When a key is pressed """
-    vk = get_vk(key)  # Get the key's vk
-    pressed_vks.add(vk)  # Add it to the set of currently pressed keys
+    try:
+        vk = get_vk(key)  # Get the key's vk
+        pressed_vks.add(vk)  # Add it to the set of currently pressed keys
 
-    for combination in combination_to_function:  # Loop through each combination
-        if is_combination_pressed(combination):  # Check if all keys in the combination are pressed
-            threading.Thread(target=combination_to_function[combination]).start()  # If so, execute the function in a new thread
-
+        for combination in combination_to_function:  # Loop through each combination
+            if is_combination_pressed(combination):  # Check if all keys in the combination are pressed
+                threading.Thread(target=combination_to_function[combination]).start()  # If so, execute the function in a new thread
+    except:
+        pass
 
 def on_release(key):
     """ When a key is released """
-    vk = get_vk(key)  # Get the key's vk
-    pressed_vks.remove(vk)  # Remove it from the set of currently pressed keys
-
-# define our clear function
-def clear():
-  
-    # for windows
-    if name == 'nt':
-        _ = system('cls')
-  
-    # for mac and linux
-    else:
-        _ = system('clear')
+    try:
+        vk = get_vk(key)  # Get the key's vk
+        pressed_vks.remove(vk)  # Remove it from the set of currently pressed keys
+    except:
+        pass
 
 clear()
 print('Anti-AFK Bot initialized. Enable/Disable with Shift+0')
