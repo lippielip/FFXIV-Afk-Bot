@@ -48,7 +48,10 @@ def get_game_window():
     try:
         gameWindow = window.getWindowsWithTitle('FINAL FANTASY XIV')[0]
         if is_admin():
-            gameWindow.activate()
+            try:
+                gameWindow.activate()
+            except:
+                return
     except IndexError:
         return
 
@@ -56,8 +59,10 @@ def get_game_window():
 def return_to_original_window():
     global originalWindow
     if is_admin():
-        originalWindow.activate()
-    
+        try:
+            originalWindow.activate()
+        except:
+            return
 
 def execute_human_movement():
     global timer, rand_interval
