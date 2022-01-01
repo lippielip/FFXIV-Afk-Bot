@@ -10,7 +10,7 @@ import math
 import os
 
 GAME_TITLE = "FINAL FANTASY XIV"
-LOADING_BAR_SCALE = 45
+LOADING_BAR_SCALE = 35
 TIME_GRANULARITY = 10
 
 MIN_DELAY = 120 * TIME_GRANULARITY
@@ -131,7 +131,6 @@ def toggle_activated():
     if threading.active_count() > 2:
         return
     threading.Thread(target=main).start()
-
 
 def main():
     # resets timer
