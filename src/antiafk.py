@@ -9,8 +9,13 @@ import sys
 import math
 import os
 
+############################################################
+  ################ USER CHANGEABLE AREA ##################
+  ######## MODIFY THESE VALUES TO YOUR LIKING ############
+############################################################
+
 GAME_TITLE = "FINAL FANTASY XIV"
-LOADING_BAR_SCALE = 35
+LOADING_BAR_SCALE = 30
 TIME_GRANULARITY = 10
 
 MIN_DELAY = 120 * TIME_GRANULARITY
@@ -21,6 +26,10 @@ KEYS = {1:'a',
         2: 'd',
         3: 'w',
         4: 's'}
+        
+############################################################
+############################################################
+############################################################
 
 global activated
 activated = False
@@ -54,6 +63,7 @@ def get_current_window():
     except IndexError:
         return
 
+
 def get_game_window():
     try:
         gameWindow = window.getWindowsWithTitle(GAME_TITLE)[0]
@@ -66,7 +76,11 @@ def activate_game_window(gameWindow):
     if is_admin():
         try:
             gameWindow.activate()
-        except:
+        except AttributeError:
+            print("\u001b[31m[ERROR]:\033[0m Game client not found\n")
+            return
+        except BaseException as err:
+            print("\u001b[31m[ERROR]:\033[0m {}\n".format(err))
             return
 
 
@@ -74,7 +88,8 @@ def return_to_original_window(originalWindow):
     if is_admin():
         try:
             originalWindow.activate()
-        except:
+        except BaseException as err:
+            print("\u001b[31m[ERROR]:\033[0m {}\n".format(err))
             return
 
 
@@ -101,7 +116,7 @@ def return_remaining_time(remainingTime):
     
 
 def execute_movement():
-    rand_key = random.randint(1,4)
+    rand_key = random.randint(1, KEYS.__len__())
     pyautogui.keyDown(KEYS[rand_key])
     pyautogui.sleep(0.1)
     pyautogui.keyUp(KEYS[rand_key])
@@ -109,30 +124,29 @@ def execute_movement():
 
 def toggle_activated():
     global activated
-    
     # toggles activation state
     activated = not activated
     # clear the screen
     clear()
 
-    # display message of automatic window focus not working
     if not is_admin():
         print("\u001b[31mNot running as admin. Automatic window focus will not work.\033[0m")
 
-    # set the current state
     activation_text = "\033[93minactive\033[0m"
     if activated:
         activation_text = "\033[92mactive\033[0m"
 
     # print the current state
     print("Anti-AFK Bot is: {}\n".format(activation_text))
+
     # prevent multiple executions from spamming the hotkey 
     # TODO: implement correct Thread locking instead of checking for active threads
     if threading.active_count() > 2:
         return
-    threading.Thread(target=main).start()
+    threading.Thread(target=execution_loop).start()
 
-def main():
+
+def execution_loop():
     # resets timer
     timer = 0
     # set an inital interval of 3 seconds to test
@@ -146,7 +160,7 @@ def main():
         gamewindow = get_game_window()
         # check if the interval has been reached otherwise progress the progress bar
         if (rand_interval - timer == 0):  
-            sys.stdout.write("[{:{}}] Done.\033[K\n".format("="* ((timer * LOADING_BAR_SCALE) / rand_interval).__round__() , LOADING_BAR_SCALE))
+            sys.stdout.write("[{:{}}] Done\033[K\n".format("="* ((timer * LOADING_BAR_SCALE) / rand_interval).__round__() , LOADING_BAR_SCALE))
 
             #get the current window the user is on
             currentWindow = get_current_window()
@@ -162,7 +176,7 @@ def main():
             timer = 0
             rand_interval = random.randint(MIN_DELAY,MAX_DELAY)
             print('')
-            print('Next input in {}'.format(return_remaining_time(rand_interval - timer)))
+            print('\033[93m[INFO]:\033[0m Next input in {}'.format(return_remaining_time(rand_interval - timer)))
 
         else:
             # output the progress bar 
@@ -172,20 +186,12 @@ def main():
         timer = timer + 1
         time.sleep(SLEEP_TIME)
 
-############################################################
-  ################ USER CHANGEABLE AREA ##################
-  ######## MODIFY KEYCODE AND/OR MODIFIER KEY ############
-############################################################
 
 combination_to_function = {
-    # duplicate this if you want to add more hotkey combos
+    # duplicate this if you want to add more hotkey combos && replace the vk value or modifier key
     # unsure of your preferred keycode? Use this site: https://keycode.info/
     frozenset([Key.shift, KeyCode(vk=48)]): toggle_activated,
 }
-
-############################################################
-############################################################
-############################################################
 
 # The currently pressed keys (initially empty)
 pressed_vks = set()
@@ -217,7 +223,6 @@ def on_press(key):
                 # If so, execute the function in a new thread
 
 
-
 def on_release(key):
     """ When a key is released """
     try:
@@ -225,6 +230,7 @@ def on_release(key):
         pressed_vks.remove(vk)  # Remove it from the set of currently pressed keys
     except KeyError:
         pass
+
 
 clear()
 print('Anti-AFK Bot initialized. Enable/Disable with Shift+0')
