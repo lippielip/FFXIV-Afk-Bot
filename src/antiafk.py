@@ -15,12 +15,12 @@ import os
 ############################################################
 
 GAME_TITLE = "FINAL FANTASY XIV"
-LOADING_BAR_SCALE = 30
+# the speed at which the timer refreshes [1 being once a second, 10 = 10 per second...]
 TIME_GRANULARITY = 10
 
+LOADING_BAR_SCALE = 30
 MIN_DELAY = 120 * TIME_GRANULARITY
 MAX_DELAY = 300 * TIME_GRANULARITY
-SLEEP_TIME = 1/TIME_GRANULARITY
 
 KEYS = {1:'a',
         2: 'd',
@@ -31,6 +31,7 @@ KEYS = {1:'a',
 ############################################################
 ############################################################
 
+SLEEP_TIME = 1/TIME_GRANULARITY
 global activated
 activated = False
 
