@@ -153,12 +153,13 @@ def execution_loop():
     # set an inital interval of 3 seconds to test
     rand_interval = 3 * TIME_GRANULARITY
     # repeat until hotkey is used
-
+    gamewindow = get_game_window()
     while activated:
         # output progress & execute movement
         # output the progress bar
         sys.stdout.write('\r')
-        gamewindow = get_game_window()
+        if not gamewindow:
+            gamewindow = get_game_window()
         # check if the interval has been reached otherwise progress the progress bar
         if (rand_interval - timer == 0):  
             sys.stdout.write("[{:{}}] Done\033[K\n".format("="* ((timer * LOADING_BAR_SCALE) / rand_interval).__round__() , LOADING_BAR_SCALE))
