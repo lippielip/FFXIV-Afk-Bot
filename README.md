@@ -14,10 +14,13 @@
    ```sh
    git clone https://github.com/lippielip/ffxiv-afk-bot.git
    ```
-2. Install Pip packages
+2. Navigate to src
+  ```sh
+  cd ffxiv-afk-bot/src
+  ```
+4. Install Pip packages
    ```sh
-   pip install pyautogui
-   pip install pynput
+   pip install -r requirements.txt
    ```
 3. Start the program
    ```sh
