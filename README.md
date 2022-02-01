@@ -15,14 +15,14 @@
    git clone https://github.com/lippielip/ffxiv-afk-bot.git
    ```
 2. Navigate to src
-  ```sh
-  cd ffxiv-afk-bot/src
-  ```
-4. Install Pip packages
+   ```sh
+   cd ffxiv-afk-bot/src
+   ```
+3. Install Pip packages
    ```sh
    pip install -r requirements.txt
    ```
-3. Start the program
+4. Start the program
    ```sh
    python antiafk.py
    ```
