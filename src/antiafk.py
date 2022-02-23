@@ -14,10 +14,8 @@ import os
   ######## MODIFY THESE VALUES TO YOUR LIKING ############
 ############################################################
 
-GAME_TITLE = "FINAL FANTASY XIV"
 # the speed at which the timer refreshes [1 being once a second, 10 = 10 per second...]
 TIME_GRANULARITY = 10
-
 LOADING_BAR_SCALE = 30
 MIN_DELAY = 120 * TIME_GRANULARITY
 MAX_DELAY = 300 * TIME_GRANULARITY
@@ -59,36 +57,49 @@ def is_admin():
 
 def get_current_window():
     try:
-        originalWindow = window.getActiveWindow()    
+        window.getActiveWindowTitle
+        originalWindow = window.getActiveWindow()
         return originalWindow
     except IndexError:
-        return
-
-
-def get_game_window():
-    try:
-        gameWindow = window.getWindowsWithTitle(GAME_TITLE)[0]
-        return gameWindow
-    except IndexError:
-        return
+        return None
 
 
 def activate_game_window(gameWindow):
-    if is_admin():
+    if window.getActiveWindowTitle() != gameWindow.title:
+        if is_admin():
+            try:
+                gameWindow.activate()
+                return
+            except:
+                None
+
         try:
-            gameWindow.activate()
+            gameWindow.minimize()
+            gameWindow.maximize()
+
         except AttributeError:
             print("\u001b[31m[ERROR]:\033[0m Game client not found\n")
             return
+            
         except BaseException as err:
             print("\u001b[31m[ERROR]:\033[0m {}\n".format(err))
             return
 
 
-def return_to_original_window(originalWindow):
-    if is_admin():
+def return_to_original_window(originalWindow,gameWindow):
+    if originalWindow.title != gameWindow.title:
+        if is_admin():
+            try:
+                originalWindow.activate()
+                return
+            except:
+                None
+
         try:
-            originalWindow.activate()
+            gameWindow.minimize()
+            originalWindow.minimize()
+            originalWindow.maximize()
+
         except BaseException as err:
             print("\u001b[31m[ERROR]:\033[0m {}\n".format(err))
             return
@@ -131,14 +142,14 @@ def toggle_activated():
     clear()
 
     if not is_admin():
-        print("\u001b[31mNot running as admin. Automatic window focus will not work.\033[0m")
-
-    activation_text = "\033[93minactive\033[0m"
-    if activated:
-        activation_text = "\033[92mactive\033[0m"
-
+        print("\u001b[31mNot running as admin. Automatic window focus will use Fallback solution.\033[0m")
     # print the current state
-    print("Anti-AFK Bot is: {}\n".format(activation_text))
+    if activated:
+        print("Anti-AFK Bot is: \033[92mactive\033[0m\nCurrent Game: {}\n".format(get_current_window().title))
+
+    if not activated:
+        print("Anti-AFK Bot is: \033[93minactive\033[0m\n")
+
 
     # prevent multiple executions from spamming the hotkey 
     # TODO: implement correct Thread locking instead of checking for active threads
@@ -153,13 +164,13 @@ def execution_loop():
     # set an inital interval of 3 seconds to test
     rand_interval = 3 * TIME_GRANULARITY
     # repeat until hotkey is used
-    gamewindow = get_game_window()
+    gameWindow = get_current_window()
     while activated:
         # output progress & execute movement
         # output the progress bar
         sys.stdout.write('\r')
-        if not gamewindow:
-            gamewindow = get_game_window()
+        if not gameWindow:
+            gameWindow = get_current_window()
         # check if the interval has been reached otherwise progress the progress bar
         if (rand_interval - timer == 0):  
             sys.stdout.write("[{:{}}] Done\033[K\n".format("="* ((timer * LOADING_BAR_SCALE) / rand_interval).__round__() , LOADING_BAR_SCALE))
@@ -168,12 +179,12 @@ def execution_loop():
             currentWindow = get_current_window()
 
             #set the focus to the game
-            activate_game_window(gamewindow)
+            activate_game_window(gameWindow)
             #determine and execute the desired movement
             execute_movement()
 
             # return focus to whatever you were doing before
-            return_to_original_window(currentWindow)
+            return_to_original_window(currentWindow,gameWindow)
             # reset the interval timer and interval
             timer = 0
             rand_interval = random.randint(MIN_DELAY,MAX_DELAY)
